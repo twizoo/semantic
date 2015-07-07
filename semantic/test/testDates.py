@@ -135,9 +135,24 @@ class TestDate(unittest.TestCase):
         target = datetime.datetime(2014, 1, 2, 20, 0)
         self.compareTime(input, target)
 
+    def testTimeDotMinutes(self):
+        input = "Let's go to the park at 6.20pm"
+        target = datetime.datetime(2014, 1, 1, 18, 20)
+        self.compareTime(input, target)
+
+    def testTimeDotMinutesZeroMinutes(self):
+        input = "Let's go to the park at 6.00am"
+        target = datetime.datetime(2014, 1, 1, 6, 00)
+        self.compareTime(input, target)
+
     def testAmbiguousTime(self):
         input = "Let's go to the park at 8 tomorrow"
         target = datetime.datetime(2014, 1, 2, 8, 0)
+        self.compareTime(input, target)
+
+    def testAmbiguousDotTime(self):
+        input = "Let's go to the park at 8.45 tomorrow"
+        target = datetime.datetime(2014, 1, 2, 8, 45)
         self.compareTime(input, target)
 
     def testMilitaryMorningTime(self):

@@ -1,0 +1,2 @@
+v0.1, 06/07/2015 -- Initial release (fork).
+v0.1.1, 07/07/2015 -- Add dotted time support.

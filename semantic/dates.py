@@ -344,9 +344,9 @@ class DateService(object):
                 # Convert from "HH:MM pm" format
                 t = time.group(2)
 
-                try:
+                if ':' in t:
                     h, m = int(t.split(':')[0]), int(t.split(':')[1])
-                except ValueError:
+                else:
                     h, m = int(t.split('.')[0]), int(t.split('.')[1])
 
                 try:

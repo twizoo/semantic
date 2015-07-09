@@ -93,7 +93,7 @@ class TestDate(unittest.TestCase):
 
     def testTomorrow(self):
         input = "Tomorrow morning, go to the grocery store"
-        target = datetime.datetime(2014, 1, 2, 8, 0)
+        target = datetime.datetime(2014, 1, 2, 10, 0)
         self.compareDate(input, target)
 
     def testToday(self):
@@ -103,7 +103,12 @@ class TestDate(unittest.TestCase):
 
     def testThis(self):
         input = "This morning, I went to the gym"
-        target = datetime.datetime(2014, 1, 1, 8, 0)
+        target = datetime.datetime(2014, 1, 1, 10, 0)
+        self.compareDate(input, target)
+
+    def testInThe(self):
+        input = "I went to the park in the afternoon"
+        target = datetime.datetime(2014, 1, 1, 15, 0)
         self.compareDate(input, target)
 
     def testIllegalDate(self):
@@ -147,12 +152,12 @@ class TestDate(unittest.TestCase):
 
     def testAmbiguousTime(self):
         input = "Let's go to the park at 8 tomorrow"
-        target = datetime.datetime(2014, 1, 2, 8, 0)
+        target = datetime.datetime(2014, 1, 2, 20, 0)
         self.compareTime(input, target)
 
     def testAmbiguousDotTime(self):
         input = "Let's go to the park at 8.45 tomorrow"
-        target = datetime.datetime(2014, 1, 2, 8, 45)
+        target = datetime.datetime(2014, 1, 2, 20, 45)
         self.compareTime(input, target)
 
     def testMilitaryMorningTime(self):
@@ -163,6 +168,21 @@ class TestDate(unittest.TestCase):
     def testMilitaryAfternoonTime(self):
         input = "Let's go to the park at 20:00 tomorrow"
         target = datetime.datetime(2014, 1, 2, 20, 0)
+        self.compareTime(input, target)
+
+    def testThisEve(self):
+        input = "Let's go to the park this eve."
+        target = datetime.datetime(2014, 1, 1, 20, 0)
+        self.compareTime(input, target)
+
+    def testTonightTime(self):
+        input = "Let's go to the park tonight."
+        target = datetime.datetime(2014, 1, 1, 20, 0)
+        self.compareTime(input, target)
+
+    def testBeforeTenIsEveningTime(self):
+        input = "Let's go to the park at 5."
+        target = datetime.datetime(2014, 1, 1, 17, 0)
         self.compareTime(input, target)
 
     #

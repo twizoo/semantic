@@ -40,11 +40,10 @@ class DateService(object):
 
     __relativeDates__ = ['tomorrow', 'tonight', 'next']
 
-    __todayMatches__ = ['tonight', 'today', 'this morning',
-                        'this evening', 'this afternoon']
+    __todayMatches__ = ['tonight', 'today', 'this morning', 'in the morning', 'in the evening',
+                        'in the eve', 'this evening', 'this eve', 'this afternoon', 'in the afternoon']
 
-    __tomorrowMatches__ = ['tomorrow', 'next morning',
-                           'next evening', 'next afternoon']
+    __tomorrowMatches__ = ['tomorrow', 'next morning', 'next evening', 'next eve', 'next afternoon']
 
     __dateDescriptors__ = {
         'one': 1,
@@ -118,7 +117,8 @@ class DateService(object):
             tomorrow
             |tonight
             |today
-            |(next|this)[\ \b](morning|afternoon|evening|Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday)
+            |\beve\b
+            |(next|this)[\ \b](morning|afternoon|evening|\beve\b|Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday)
             |(Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday)
             |(Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|June?|July?|Aug(?:ust)?|Sept(?:ember)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)\ (\w+)((\s|\-)?\w*)
         )
@@ -131,6 +131,8 @@ class DateService(object):
             morning
             |afternoon
             |evening
+            |tonight
+            |\beve\b
             |(\d{1,2}[:.]\d{2})\ *(am|pm)?
             |in\ (.+?)\ (hours|minutes)(\ (?:and\ )?(.+?)\ (hours|minutes))?
             |(\d{1,2})(?=\s*(am|pm))
@@ -287,15 +289,15 @@ class DateService(object):
             if not time:
                 return None
 
-            # Default times: 8am, 12pm, 7pm
+            # Default times: 10am, 3pm, 8pm
             elif time.group(1) == 'morning':
-                h = 8
+                h = 10
                 m = 0
             elif time.group(1) == 'afternoon':
-                h = 12
+                h = 15
                 m = 0
-            elif time.group(1) == 'evening':
-                h = 19
+            elif time.group(1) == 'evening' or time.group(1) == 'tonight' or time.group(1) == 'eve':
+                h = 20
                 m = 0
             elif time.group(4) and time.group(5):
                 # match relative times, e.g. in 5 hours
@@ -357,6 +359,14 @@ class DateService(object):
 
             if relative:
                 return self.now + datetime.timedelta(hours=h, minutes=m)
+
+            # here we assume that time before 10 is meant to be pm
+            # unless time includes 'am' or is in format 08:00 (starts with 0)
+            elif h < 10 and time.group(3) != 'am' and time.group(1)[0] != '0':
+                h = (h % 12) + 12
+                return datetime.datetime(
+                    self.now.year, self.now.month, self.now.day, h, m
+                )
             else:
                 return datetime.datetime(
                     self.now.year, self.now.month, self.now.day, h, m

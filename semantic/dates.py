@@ -391,12 +391,7 @@ class DateService(object):
         """
 
         days = self.extractDays(input)
-        times = self.extractTimes(input)
-
-        if days:
-            return days
-        if times:
-            return times
+        return days
 
     def extractDate(self, input):
         """Returns the first date found in the input string, or None if not

@@ -107,6 +107,11 @@ class TestDate(unittest.TestCase):
         target = None
         self.compareDate(input, target)
 
+    def testNoDateButTime(self):
+        input = "I have a meeting at 2pm"
+        target = None
+        self.compareDate(input, target)
+
     #
     #  Time Tests
     #
@@ -175,7 +180,7 @@ class TestDate(unittest.TestCase):
     def testInThe(self):
         input = "I went to the park in the afternoon"
         target = "15:0"
-        self.compareDate(input, target)
+        self.compareTime(input, target)
 
     def testBothDateAndTime(self):
         input = "Let's go to the park at 5 tomorrow."
@@ -188,7 +193,6 @@ class TestDate(unittest.TestCase):
         input = "It's a very nice day."
         target = None
         self.compareTime(input, target)
-
 
 if __name__ == "__main__":
     suite = unittest.TestLoader().loadTestsFromTestCase(TestDate)

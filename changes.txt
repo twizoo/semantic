@@ -3,3 +3,4 @@ v0.1.1, 07/07/2015 -- Add dotted time support.
 v0.1.2, 09/07/2015 -- Add new phrases
 v0.1.3, 12/07/2015 -- Add number of people.
 v0.1.4, 15/07/2015 -- Date and time returned as string not datetime
+v0.1.5, 15/07/2015 -- Fix date, returns None when no Date but Time given

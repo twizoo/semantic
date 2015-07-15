@@ -1,6 +1,5 @@
 import re
 import datetime
-from itertools import izip_longest
 from numbers import NumberService
 
 
@@ -41,7 +40,8 @@ class DateService(object):
     __relativeDates__ = ['tomorrow', 'tonight', 'next']
 
     __todayMatches__ = ['tonight', 'today', 'this morning', 'in the morning', 'in the evening',
-                        'in the eve', 'this evening', 'this eve', 'this afternoon', 'in the afternoon']
+                        'in the eve', 'this evening', 'this eve', 'this afternoon',
+                        'in the afternoon']
 
     __tomorrowMatches__ = ['tomorrow', 'next morning', 'next evening', 'next eve', 'next afternoon']
 
@@ -118,9 +118,11 @@ class DateService(object):
             |tonight
             |today
             |\beve\b
-            |(next|this)[\ \b](morning|afternoon|evening|\beve\b|Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday)
+            |(next|this)[\ \b](morning|afternoon|evening|\beve\b|Monday|Tuesday|Wednesday|Thursday|
+                               Friday|Saturday|Sunday)
             |(Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday)
-            |(Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|June?|July?|Aug(?:ust)?|Sept(?:ember)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)\ (\w+)((\s|\-)?\w*)
+            |(Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|June?|July?|Aug(?:ust)?|
+              Sept(?:ember)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)\ (\w+)((\s|\-)?\w*)
         )
         """)
 
@@ -251,13 +253,12 @@ class DateService(object):
                     datetime.timedelta(days=num_days_away)
             elif month and day:
                 d = datetime.datetime(
-                    self.now.year, month, day,
-                    self.now.hour, self.now.minute)
+                    self.now.year, month, day)
 
             if days_from:
                 d += datetime.timedelta(days=days_from)
 
-            return d
+            return d.strftime("%Y-%m-%d")
 
         matches = self._dayRegex.finditer(input)
 
@@ -364,13 +365,9 @@ class DateService(object):
             # unless time includes 'am' or is in format 08:00 (starts with 0)
             elif h < 10 and time.group(3) != 'am' and time.group(1)[0] != '0':
                 h = (h % 12) + 12
-                return datetime.datetime(
-                    self.now.year, self.now.month, self.now.day, h, m
-                )
+                return "%d:%d" % (h, m)
             else:
-                return datetime.datetime(
-                    self.now.year, self.now.month, self.now.day, h, m
-                )
+                return "%d:%d" % (h, m)
 
         input = self._preprocess(input)
         return [handleMatch(time) for time in self._timeRegex.finditer(input)]
@@ -384,11 +381,7 @@ class DateService(object):
         return None
 
     def extractDates(self, input):
-        """Extract semantic date information from an input string.
-        In effect, runs both parseDay and parseTime on the input
-        string and merges the results to produce a comprehensive
-        datetime object.
-
+        """
         Args:
             input (str): Input string to be parsed.
 
@@ -396,22 +389,14 @@ class DateService(object):
             A list of datetime objects containing the extracted dates from the
             input snippet, or an empty list if not found.
         """
-        def merge((day, time)):
-            if not (day or time):
-                return None
-
-            if not day:
-                return time
-            if not time:
-                return day
-
-            return datetime.datetime(
-                day.year, day.month, day.day, time.hour, time.minute
-            )
 
         days = self.extractDays(input)
         times = self.extractTimes(input)
-        return map(merge, izip_longest(days, times, fillvalue=None))
+
+        if days:
+            return days
+        if times:
+            return times
 
     def extractDate(self, input):
         """Returns the first date found in the input string, or None if not

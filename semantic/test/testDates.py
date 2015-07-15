@@ -14,7 +14,7 @@ class TestDate(unittest.TestCase):
 
     def compareTime(self, input, target):
         service = DateService()
-        result = service.extractDate(input)
+        result = service.extractTime(input)
         self.assertEqual(target, result)
 
     def compareDates(self, input, targets):
@@ -35,89 +35,76 @@ class TestDate(unittest.TestCase):
 
     def testExactWords(self):
         input = "Remind me on January Twenty Sixth"
-        target = datetime.datetime(2014, 1, 26)
+        target = "2014-01-26"
         self.compareDate(input, target)
 
     def testExactWordsDash(self):
         input = "Remind me on January Twenty-Sixth"
-        target = datetime.datetime(2014, 1, 26)
+        target = "2014-01-26"
         self.compareDate(input, target)
 
     def testExactNums(self):
         input = "Remind me on January 26"
-        target = datetime.datetime(2014, 1, 26)
+        target = "2014-01-26"
         self.compareDate(input, target)
 
     def testOrdinalNums(self):
         input = "Remind me on January 2nd"
-        target = datetime.datetime(2014, 1, 2)
+        target = "2014-01-02"
         self.compareDate(input, target)
 
     def testWeekFromExact(self):
         input = "Do x y and z a week from January 26"
-        target = datetime.datetime(2014, 1, 26) + datetime.timedelta(days=7)
+        target = "2014-02-02"
         self.compareDate(input, target)
 
     def testMultipleWeeksFrom(self):
         input = "Do x y and z three weeks from January 26"
-        target = datetime.datetime(2014, 1, 26) + datetime.timedelta(days=21)
+        target = "2014-02-16"
         self.compareDate(input, target)
 
     def testMultiWordDaysFrom(self):
         input = "Do x y and z twenty six days from January 26"
-        target = datetime.datetime(2014, 1, 26) + datetime.timedelta(days=26)
+        target = "2014-02-21"
         self.compareDate(input, target)
 
     def testMultiWordAndDaysFrom(self):
         input = "Do x y and z one hundred and twelve days from January 26"
-        target = datetime.datetime(2014, 1, 26) + datetime.timedelta(days=112)
+        target = "2014-05-18"
         self.compareDate(input, target)
 
     def testNextFriday(self):
         input = "Next Friday, go to the grocery store"
-        friday = 4
-        num_days_away = (friday - datetime.datetime.today().weekday()) % 7
-        target = datetime.datetime.today() + \
-            datetime.timedelta(
-                days=7 + num_days_away)
+        target = "2014-01-10"
         self.compareDate(input, target)
 
     def testAmbiguousNext(self):
         input = "The next event will take place on Friday"
-        friday = 4
-        num_days_away = (friday - datetime.datetime.today().weekday()) % 7
-        target = datetime.datetime.today() + \
-            datetime.timedelta(
-                days=num_days_away)
+        target = "2014-01-03"
         self.compareDate(input, target)
 
     def testTomorrow(self):
         input = "Tomorrow morning, go to the grocery store"
-        target = datetime.datetime(2014, 1, 2, 10, 0)
+        target = "2014-01-02"
         self.compareDate(input, target)
 
     def testToday(self):
         input = "Send me an email some time today if you can"
-        target = datetime.datetime.today()
+        target = "2014-01-01"
         self.compareDate(input, target)
 
     def testThis(self):
         input = "This morning, I went to the gym"
-        target = datetime.datetime(2014, 1, 1, 10, 0)
-        self.compareDate(input, target)
-
-    def testInThe(self):
-        input = "I went to the park in the afternoon"
-        target = datetime.datetime(2014, 1, 1, 15, 0)
+        target = "2014-01-01"
         self.compareDate(input, target)
 
     def testIllegalDate(self):
         input = "I have a meeting on February 29 at 12:15pm"
         self.assertRaises(ValueError, lambda: DateService().extractDate(input))
 
-    def testMultiple(self):
-        input = "Tomorrow, I'll schedule the meeting for June 9 at 1:30pm"
-        target = datetime.datetime(2014, 1, 2, 13, 30)
+    def testNoDate(self):
+        input = "It's a very nice day."
+        target = None
         self.compareDate(input, target)
 
     #
@@ -125,8 +112,8 @@ class TestDate(unittest.TestCase):
     #
 
     def testExactTime(self):
-        input = "Let's go to the park at 12:51pm tomorrow"
-        target = datetime.datetime(2014, 1, 2, 12, 51)
+        input = "Let's go to the park at 12:51pm"
+        target = "12:51"
         self.compareTime(input, target)
 
     def testInExactTime(self):
@@ -136,65 +123,72 @@ class TestDate(unittest.TestCase):
         self.compareTime(input, target)
 
     def testTimeNoMinutes(self):
-        input = "Let's go to the park at 8pm tomorrow"
-        target = datetime.datetime(2014, 1, 2, 20, 0)
+        input = "Let's go to the park at 8pm"
+        target = "20:0"
         self.compareTime(input, target)
 
     def testTimeDotMinutes(self):
         input = "Let's go to the park at 6.20pm"
-        target = datetime.datetime(2014, 1, 1, 18, 20)
+        target = "18:20"
         self.compareTime(input, target)
 
     def testTimeDotMinutesZeroMinutes(self):
         input = "Let's go to the park at 6.00am"
-        target = datetime.datetime(2014, 1, 1, 6, 00)
+        target = "6:0"
         self.compareTime(input, target)
 
     def testAmbiguousTime(self):
-        input = "Let's go to the park at 8 tomorrow"
-        target = datetime.datetime(2014, 1, 2, 20, 0)
+        input = "Let's go to the park at 8"
+        target = "20:0"
         self.compareTime(input, target)
 
     def testAmbiguousDotTime(self):
-        input = "Let's go to the park at 8.45 tomorrow"
-        target = datetime.datetime(2014, 1, 2, 20, 45)
+        input = "Let's go to the park at 8.45"
+        target = "20:45"
         self.compareTime(input, target)
 
     def testMilitaryMorningTime(self):
-        input = "Let's go to the park at 08:00 tomorrow"
-        target = datetime.datetime(2014, 1, 2, 8, 0)
+        input = "Let's go to the park at 08:00"
+        target = "8:0"
         self.compareTime(input, target)
 
     def testMilitaryAfternoonTime(self):
-        input = "Let's go to the park at 20:00 tomorrow"
-        target = datetime.datetime(2014, 1, 2, 20, 0)
+        input = "Let's go to the park at 20:00"
+        target = "20:0"
         self.compareTime(input, target)
 
     def testThisEve(self):
         input = "Let's go to the park this eve."
-        target = datetime.datetime(2014, 1, 1, 20, 0)
+        target = "20:0"
         self.compareTime(input, target)
 
     def testTonightTime(self):
         input = "Let's go to the park tonight."
-        target = datetime.datetime(2014, 1, 1, 20, 0)
+        target = "20:0"
         self.compareTime(input, target)
 
     def testBeforeTenIsEveningTime(self):
         input = "Let's go to the park at 5."
-        target = datetime.datetime(2014, 1, 1, 17, 0)
+        target = "17:0"
         self.compareTime(input, target)
 
-    #
-    # Multi-date tests
-    #
+    def testInThe(self):
+        input = "I went to the park in the afternoon"
+        target = "15:0"
+        self.compareDate(input, target)
 
-    def testTwoDates(self):
-        input = "From March 13 at 12:30pm to September 2 at 11:15am"
-        targets = [datetime.datetime(2014, 3, 13, 12, 30),
-                   datetime.datetime(2014, 9, 2, 11, 15)]
-        self.compareDates(input, targets)
-        self.compareTimes(input, targets)
+    def testBothDateAndTime(self):
+        input = "Let's go to the park at 5 tomorrow."
+        target_time = "17:0"
+        target_date = "2014-01-02"
+        self.compareTime(input, target_time)
+        self.compareDate(input, target_date)
+
+    def testNoTime(self):
+        input = "It's a very nice day."
+        target = None
+        self.compareTime(input, target)
+
 
 if __name__ == "__main__":
     suite = unittest.TestLoader().loadTestsFromTestCase(TestDate)

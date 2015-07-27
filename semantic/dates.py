@@ -365,9 +365,9 @@ class DateService(object):
             # unless time includes 'am' or is in format 08:00 (starts with 0)
             elif h < 10 and time.group(3) != 'am' and time.group(1)[0] != '0':
                 h = (h % 12) + 12
-                return "%d:%d" % (h, m)
+                return "%02d:%02d" % (h, m)
             else:
-                return "%d:%d" % (h, m)
+                return "%02d:%02d" % (h, m)
 
         input = self._preprocess(input)
         return [handleMatch(time) for time in self._timeRegex.finditer(input)]
@@ -377,7 +377,7 @@ class DateService(object):
         or None if not found."""
         times = self.extractTimes(input)
         if times:
-            return times[0]
+            return times[-1]
         return None
 
     def extractDates(self, input):

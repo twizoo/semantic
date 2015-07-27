@@ -132,6 +132,11 @@ class TestDate(unittest.TestCase):
         target = "20:00"
         self.compareTime(input, target)
 
+    def testTimeNoMinutesLater(self):
+        input = "Let's go to the park at 10pm"
+        target = "22:00"
+        self.compareTime(input, target)
+
     def testTimeDotMinutes(self):
         input = "Let's go to the park at 6.20pm"
         target = "18:20"

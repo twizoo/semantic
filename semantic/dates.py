@@ -377,7 +377,7 @@ class DateService(object):
         or None if not found."""
         times = self.extractTimes(input)
         if times:
-            return times[0]
+            return times[-1]
         return None
 
     def extractDates(self, input):
